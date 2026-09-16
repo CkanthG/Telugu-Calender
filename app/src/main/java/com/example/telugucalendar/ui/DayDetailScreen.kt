@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -18,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.example.telugucalendar.panchangam.IndiaTime
 import com.example.telugucalendar.panchangam.PanchangamCalculator
 import com.example.telugucalendar.reminder.AlarmScheduler
+import com.example.telugucalendar.reminder.Reminder
+import com.example.telugucalendar.reminder.ReminderStore
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -78,8 +81,14 @@ fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
 @Composable
 private fun ReminderSection(dayCal: Calendar) {
     val context = LocalContext.current
+    val dateKey = remember(dayCal.timeInMillis) { IndiaTime.dateKey(dayCal) }
     var reminderText by remember { mutableStateOf("") }
-    var scheduledLabel by remember { mutableStateOf<String?>(null) }
+    var reminders by remember(dateKey) {
+        mutableStateOf(ReminderStore.getForDate(context, dateKey))
+    }
+    val timeLabelFormat = remember {
+        SimpleDateFormat("d MMM yyyy, h:mm a", Locale.ENGLISH)
+    }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -88,10 +97,46 @@ private fun ReminderSection(dayCal: Calendar) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "రిమైండర్ (Reminder)",
+                text = "రిమైండర్‌లు (Reminders)",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleMedium
             )
+
+            if (reminders.isEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "No reminders set for this day yet.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
+                reminders.forEach { reminder ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = timeLabelFormat.format(Date(reminder.timeMillis)),
+                                fontWeight = FontWeight.SemiBold,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            if (reminder.note.isNotBlank()) {
+                                Text(reminder.note, style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                        IconButton(onClick = {
+                            AlarmScheduler.cancel(context, reminder.id)
+                            ReminderStore.remove(context, reminder.id)
+                            reminders = ReminderStore.getForDate(context, dateKey)
+                        }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Cancel reminder")
+                        }
+                    }
+                    Divider()
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -107,7 +152,6 @@ private fun ReminderSection(dayCal: Calendar) {
                 onClick = {
                     val picked = dayCal.clone() as Calendar
 
-                    // Step 1: pick the time of day.
                     val timePicker = TimePickerDialog(
                         context,
                         { _, hourOfDay, minute ->
@@ -127,7 +171,7 @@ private fun ReminderSection(dayCal: Calendar) {
                             val requestCode = picked.timeInMillis.toInt()
                             val title = "Telugu Calendar Reminder"
                             val message = reminderText.ifBlank {
-                                "Reminder for ${SimpleDateFormat("d MMM yyyy, h:mm a", Locale.ENGLISH).format(picked.time)}"
+                                "Reminder for ${timeLabelFormat.format(picked.time)}"
                             }
 
                             AlarmScheduler.schedule(
@@ -138,9 +182,17 @@ private fun ReminderSection(dayCal: Calendar) {
                                 message = message
                             )
 
-                            scheduledLabel = SimpleDateFormat(
-                                "d MMM yyyy, h:mm a", Locale.ENGLISH
-                            ).format(picked.time)
+                            ReminderStore.add(
+                                context,
+                                Reminder(
+                                    id = requestCode,
+                                    dateKey = dateKey,
+                                    timeMillis = picked.timeInMillis,
+                                    note = message
+                                )
+                            )
+                            reminders = ReminderStore.getForDate(context, dateKey)
+                            reminderText = ""
 
                             if (AlarmScheduler.needsExactAlarmPermission(context)) {
                                 Toast.makeText(
@@ -158,7 +210,6 @@ private fun ReminderSection(dayCal: Calendar) {
                         false
                     )
 
-                    // Step 2: pick the date first, then show the time picker above.
                     val datePicker = DatePickerDialog(
                         context,
                         { _, year, month, dayOfMonth ->
@@ -178,15 +229,6 @@ private fun ReminderSection(dayCal: Calendar) {
                 Icon(Icons.Filled.Notifications, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Set Reminder / Alarm")
-            }
-
-            scheduledLabel?.let {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Reminder scheduled for $it",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
             }
         }
     }
