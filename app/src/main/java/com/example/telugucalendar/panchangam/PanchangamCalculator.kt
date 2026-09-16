@@ -23,9 +23,6 @@ data class PanchangamDay(
 
 object PanchangamCalculator {
 
-    // Fixed to India Standard Time so results don't depend on the device's timezone.
-    private val IST = java.util.TimeZone.getTimeZone("Asia/Kolkata")
-
     // Reference location used for sunrise, since panchangam is location-dependent.
     // Defaulted to Hyderabad. If you need a calendar matching a different city
     // (e.g. Vijayawada, which some published Telugu calendars use), change these.
@@ -69,7 +66,7 @@ object PanchangamCalculator {
     fun calculate(date: Calendar): PanchangamDay {
         // Anchor the calendar date itself to IST, ignoring the device's timezone,
         // so results are consistent regardless of where the app is run/tested.
-        val midnightIST = Calendar.getInstance(IST).apply {
+        val midnightIST = Calendar.getInstance(IndiaTime.IST).apply {
             set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH), 0, 0, 0)
             set(Calendar.MILLISECOND, 0)
         }

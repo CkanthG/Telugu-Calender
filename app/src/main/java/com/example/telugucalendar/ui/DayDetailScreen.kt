@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.telugucalendar.panchangam.IndiaTime
 import com.example.telugucalendar.panchangam.PanchangamCalculator
 import com.example.telugucalendar.reminder.AlarmScheduler
 import java.text.SimpleDateFormat
@@ -24,7 +25,9 @@ import java.util.*
 @Composable
 fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
     val panchangam = remember(dayCal.timeInMillis) { PanchangamCalculator.calculate(dayCal) }
-    val dateFormat = remember { SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH) }
+    val dateFormat = remember {
+        SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH).apply { timeZone = IndiaTime.IST }
+    }
 
     Scaffold(
         topBar = {

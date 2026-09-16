@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.telugucalendar.panchangam.IndiaTime
 import com.example.telugucalendar.panchangam.PanchangamCalculator
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,10 +26,12 @@ import java.util.*
 @Composable
 fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
     var monthCal by remember {
-        mutableStateOf(Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 1) })
+        mutableStateOf(IndiaTime.now().apply { set(Calendar.DAY_OF_MONTH, 1) })
     }
 
-    val monthFormat = remember { SimpleDateFormat("MMMM yyyy", Locale.ENGLISH) }
+    val monthFormat = remember {
+        SimpleDateFormat("MMMM yyyy", Locale.ENGLISH).apply { timeZone = IndiaTime.IST }
+    }
 
     Scaffold(
         topBar = {
@@ -107,7 +110,7 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
 }
 
 private fun isToday(dayCal: Calendar): Boolean {
-    val today = Calendar.getInstance()
+    val today = IndiaTime.now()
     return dayCal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
             dayCal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
 }
