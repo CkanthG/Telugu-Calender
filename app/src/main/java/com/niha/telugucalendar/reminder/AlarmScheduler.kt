@@ -1,11 +1,10 @@
-package com.example.telugucalendar.reminder
+package com.niha.telugucalendar.reminder
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import java.util.Calendar
 
 /**
  * Schedules a one-off exact alarm for a given date/time using AlarmManager.

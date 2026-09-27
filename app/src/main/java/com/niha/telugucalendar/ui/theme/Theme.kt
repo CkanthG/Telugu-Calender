@@ -1,4 +1,4 @@
-package com.example.telugucalendar.ui.theme
+package com.niha.telugucalendar.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

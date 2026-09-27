@@ -1,4 +1,4 @@
-package com.example.telugucalendar.panchangam
+package com.niha.telugucalendar.panchangam
 
 import java.util.Calendar
 import java.util.TimeZone

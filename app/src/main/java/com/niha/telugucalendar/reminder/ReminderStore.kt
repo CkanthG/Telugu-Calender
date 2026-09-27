@@ -1,4 +1,4 @@
-package com.example.telugucalendar.reminder
+package com.niha.telugucalendar.reminder
 
 import android.content.Context
 import org.json.JSONArray

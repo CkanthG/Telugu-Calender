@@ -1,4 +1,4 @@
-package com.example.telugucalendar.ui
+package com.niha.telugucalendar.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,10 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.telugucalendar.panchangam.IndiaTime
-import com.example.telugucalendar.panchangam.PanchangamCalculator
-import com.example.telugucalendar.reminder.ReminderStore
+import com.niha.telugucalendar.panchangam.IndiaTime
+import com.niha.telugucalendar.panchangam.PanchangamCalculator
+import com.niha.telugucalendar.reminder.ReminderStore
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -91,7 +92,7 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
                     Text(
                         text = it,
                         modifier = Modifier.weight(1f),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold
                     )
                 }

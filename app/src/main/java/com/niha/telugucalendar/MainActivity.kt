@@ -1,4 +1,4 @@
-package com.example.telugucalendar
+package com.niha.telugucalendar
 
 import android.Manifest
 import android.os.Build
@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.example.telugucalendar.reminder.NotificationHelper
-import com.example.telugucalendar.ui.CalendarScreen
-import com.example.telugucalendar.ui.DayDetailScreen
-import com.example.telugucalendar.ui.theme.TeluguCalendarTheme
+import com.niha.telugucalendar.reminder.NotificationHelper
+import com.niha.telugucalendar.ui.CalendarScreen
+import com.niha.telugucalendar.ui.DayDetailScreen
+import com.niha.telugucalendar.ui.theme.TeluguCalendarTheme
 import java.util.Calendar
 
 class MainActivity : ComponentActivity() {

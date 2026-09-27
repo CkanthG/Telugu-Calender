@@ -1,4 +1,4 @@
-package com.example.telugucalendar.ui
+package com.niha.telugucalendar.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.telugucalendar.panchangam.IndiaTime
-import com.example.telugucalendar.panchangam.PanchangamCalculator
-import com.example.telugucalendar.reminder.AlarmScheduler
-import com.example.telugucalendar.reminder.Reminder
-import com.example.telugucalendar.reminder.ReminderStore
+import com.niha.telugucalendar.panchangam.IndiaTime
+import com.niha.telugucalendar.panchangam.PanchangamCalculator
+import com.niha.telugucalendar.reminder.AlarmScheduler
+import com.niha.telugucalendar.reminder.Reminder
+import com.niha.telugucalendar.reminder.ReminderStore
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -1,6 +1,7 @@
-package com.example.telugucalendar.reminder
+package com.niha.telugucalendar.reminder
 
 import android.Manifest
+import android.R
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -10,7 +11,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import com.example.telugucalendar.MainActivity
+import com.niha.telugucalendar.MainActivity
 
 /**
  * Fires when a scheduled reminder alarm triggers. Shows a notification with
@@ -31,7 +32,7 @@ class ReminderReceiver : BroadcastReceiver() {
         )
 
         val notification = NotificationCompat.Builder(context, NotificationHelper.CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
