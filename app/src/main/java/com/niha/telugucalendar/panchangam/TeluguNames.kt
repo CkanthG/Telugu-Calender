@@ -65,4 +65,11 @@ object TeluguNames {
         "ఫాల్గుణం",  // Kumbha
         "చైత్రం"    // Meena
     )
+
+    // Indexed by lunar month NUMBER (1=Chaitra .. 12=Phalguna), matching the
+    // online panchang API's lunar_month.number field — index = number - 1.
+    val masaNamesByNumber = listOf(
+        "చైత్రం", "వైశాఖం", "జ్యేష్ఠం", "ఆషాఢం", "శ్రావణం", "భాద్రపదం",
+        "ఆశ్వయుజం", "కార్తీకం", "మార్గశిరం", "పుష్యం", "మాఘం", "ఫాల్గుణం"
+    )
 }

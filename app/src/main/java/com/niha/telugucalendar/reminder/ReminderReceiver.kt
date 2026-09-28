@@ -1,7 +1,6 @@
 package com.niha.telugucalendar.reminder
 
 import android.Manifest
-import android.R
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -32,7 +31,7 @@ class ReminderReceiver : BroadcastReceiver() {
         )
 
         val notification = NotificationCompat.Builder(context, NotificationHelper.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_dialog_info)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

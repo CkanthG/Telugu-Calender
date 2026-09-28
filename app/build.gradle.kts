@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.telugucalendar"
+    namespace = "com.niha.telugucalendar"
     compileSdk = 37
 
     defaultConfig {

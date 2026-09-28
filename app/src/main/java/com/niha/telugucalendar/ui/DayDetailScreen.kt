@@ -3,6 +3,7 @@ package com.niha.telugucalendar.ui
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,10 +14,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.niha.telugucalendar.panchangam.IndiaTime
+import com.niha.telugucalendar.panchangam.PanchangamApiClient
 import com.niha.telugucalendar.panchangam.PanchangamCalculator
 import com.niha.telugucalendar.reminder.AlarmScheduler
 import com.niha.telugucalendar.reminder.Reminder
@@ -27,7 +30,24 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
-    val panchangam = remember(dayCal.timeInMillis) { PanchangamCalculator.calculate(dayCal) }
+    BackHandler(onBack = onBack) // system/gesture back returns to the calendar, not out of the app
+
+    var panchangam by remember(dayCal.timeInMillis) {
+        mutableStateOf(PanchangamCalculator.calculate(dayCal)) // instant offline estimate first
+    }
+    var isOnlineResult by remember(dayCal.timeInMillis) { mutableStateOf(false) }
+    var isLoadingOnline by remember(dayCal.timeInMillis) { mutableStateOf(true) }
+
+    LaunchedEffect(dayCal.timeInMillis) {
+        isLoadingOnline = true
+        val online = PanchangamApiClient.fetchOnline(dayCal)
+        if (online != null) {
+            panchangam = online
+            isOnlineResult = true
+        }
+        isLoadingOnline = false
+    }
+
     val dateFormat = remember {
         SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH).apply { timeZone = IndiaTime.IST }
     }
@@ -51,6 +71,24 @@ fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
+            when {
+                isLoadingOnline -> Text(
+                    "⏳ Fetching accurate panchang online…",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                isOnlineResult -> Text(
+                    "✅ Online panchang (FreeAstroAPI)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                else -> Text(
+                    "⚠️ Online panchang unavailable — showing offline estimate",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Red
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
             DetailRow("వారం (Day)", panchangam.varaName)
             DetailRow("తిథి (Tithi)", "${panchangam.tithiName} (${panchangam.pakshaName})")
             DetailRow("నక్షత్రం (Nakshatra)", panchangam.nakshatraName)

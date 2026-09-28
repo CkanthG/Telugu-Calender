@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.niha.telugucalendar.panchangam.IndiaTime
 import com.niha.telugucalendar.panchangam.PanchangamCalculator
@@ -30,13 +28,8 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
-    val context = LocalContext.current
     var monthCal by remember {
         mutableStateOf(IndiaTime.now().apply { set(Calendar.DAY_OF_MONTH, 1) })
-    }
-
-    val todayRemindersCount = remember {
-        ReminderStore.countForDate(context, IndiaTime.dateKey(IndiaTime.now()))
     }
 
     val monthFormat = remember {
@@ -48,13 +41,10 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
             TopAppBar(
                 title = { Text("తెలుగు క్యాలెండర్") },
                 actions = {
-                    if (todayRemindersCount > 0) {
-                        BadgedBox(
-                            badge = { Badge { Text(todayRemindersCount.toString()) } },
-                            modifier = Modifier.padding(end = 16.dp)
-                        ) {
-                            Icon(Icons.Filled.Notifications, contentDescription = "Today's reminders")
-                        }
+                    IconButton(onClick = {
+                        monthCal = IndiaTime.now().apply { set(Calendar.DAY_OF_MONTH, 1) }
+                    }) {
+                        Icon(Icons.Filled.Today, contentDescription = "Go to today")
                     }
                 }
             )
@@ -92,7 +82,7 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
                     Text(
                         text = it,
                         modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -157,62 +147,47 @@ private fun DayCell(dayCal: Calendar, onClick: () -> Unit) {
         Modifier
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .aspectRatio(0.8f)
             .padding(2.dp)
             .background(bgColor)
             .then(borderModifier)
             .clickable { onClick() }
+            .padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Text(
+            text = dayCal.get(Calendar.DAY_OF_MONTH).toString(),
+            fontWeight = FontWeight.Bold,
+            color = if (today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            text = panchangam.tithiName,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1
+        )
+        Text(
+            text = panchangam.nakshatraName,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
+            color = MaterialTheme.colorScheme.primary
+        )
+        if (panchangam.isAdhikaMasa) {
             Text(
-                text = dayCal.get(Calendar.DAY_OF_MONTH).toString(),
-                fontWeight = FontWeight.Bold,
-                color = if (today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = panchangam.tithiName,
+                text = "అధిక",
                 style = MaterialTheme.typography.labelSmall,
+                color = Color.Red,
                 maxLines = 1
             )
-            Text(
-                text = panchangam.nakshatraName,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.primary
-            )
-            if (panchangam.isAdhikaMasa) {
-                Text(
-                    text = "అధిక",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Red,
-                    maxLines = 1
-                )
-            }
-            if (reminderCount > 0) {
-                Text(
-                    text = "🔔 $reminderCount",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1
-                )
-            }
         }
-
         if (reminderCount > 0) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(4.dp)
-                    .size(8.dp)
-                    .background(Color.Red, shape = CircleShape)
+            Text(
+                text = "🔔 $reminderCount",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1
             )
         }
     }
