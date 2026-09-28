@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.niha.telugucalendar.ads.AdConfig
 import com.niha.telugucalendar.panchangam.IndiaTime
+import com.google.android.gms.ads.AdSize
 import com.niha.telugucalendar.panchangam.PanchangamCalculator
 import com.niha.telugucalendar.reminder.ReminderStore
 import java.text.SimpleDateFormat
@@ -48,6 +50,15 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (AdConfig.SHOW_CALENDAR_BOTTOM_BANNER) {
+                BannerAd(
+                    AdConfig.bannerCalendarBottom, 
+                    AdSize.BANNER,
+                    modifier = Modifier.navigationBarsPadding()
+                )
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -107,7 +118,7 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(7),
-                modifier = Modifier.fillMaxSize().padding(4.dp)
+                modifier = Modifier.fillMaxWidth().padding(4.dp)
             ) {
                 items(cells) { dayCal ->
                     if (dayCal == null) {
@@ -116,6 +127,12 @@ fun CalendarScreen(onDayClick: (Calendar) -> Unit) {
                         DayCell(dayCal, onClick = { onDayClick(dayCal) })
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+            
+            if (AdConfig.SHOW_CALENDAR_INLINE_BANNER) {
+                BannerAd(AdConfig.bannerCalendarInline, AdSize.LARGE_BANNER, modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 8.dp))
             }
         }
     }

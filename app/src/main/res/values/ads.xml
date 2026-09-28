@@ -1,0 +1,5 @@
+<resources>
+    <!-- Google's SAMPLE AdMob App ID (safe for testing). Replace with YOUR real
+         AdMob App ID (format ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY) before release. -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+</resources>

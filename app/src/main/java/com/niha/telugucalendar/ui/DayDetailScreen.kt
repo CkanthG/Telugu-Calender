@@ -18,7 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.niha.telugucalendar.ads.AdConfig
+import com.niha.telugucalendar.ads.AdManager
+import com.niha.telugucalendar.ads.findActivity
 import com.niha.telugucalendar.panchangam.IndiaTime
+import com.google.android.gms.ads.AdSize
 import com.niha.telugucalendar.panchangam.PanchangamApiClient
 import com.niha.telugucalendar.panchangam.PanchangamCalculator
 import com.niha.telugucalendar.reminder.AlarmScheduler
@@ -30,7 +34,12 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
-    BackHandler(onBack = onBack) // system/gesture back returns to the calendar, not out of the app
+    // Every way of leaving this screen goes through here so the interstitial (if due) shows first.
+    val activity = LocalContext.current.findActivity()
+    val goBack: () -> Unit = {
+        if (activity != null) AdManager.showInterstitialThen(activity, onBack) else onBack()
+    }
+    BackHandler(onBack = goBack) // system/gesture back returns to the calendar, not out of the app
 
     var panchangam by remember(dayCal.timeInMillis) {
         mutableStateOf(PanchangamCalculator.calculate(dayCal)) // instant offline estimate first
@@ -57,11 +66,16 @@ fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
             TopAppBar(
                 title = { Text(dateFormat.format(dayCal.time)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = goBack) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (AdConfig.SHOW_DETAIL_BOTTOM_BANNER) {
+                BannerAd(AdConfig.bannerDetailBottom, AdSize.BANNER)
+            }
         }
     ) { padding ->
         Column(
@@ -103,8 +117,22 @@ fun DayDetailScreen(dayCal: Calendar, onBack: () -> Unit) {
                 SpecialBanner("పౌర్ణమి — Pournami")
             }
 
+            // --- AD SLOT: inline medium-rectangle banner between panchang and reminders ---
+            if (AdConfig.SHOW_DETAIL_INLINE_BANNER) {
+                Spacer(modifier = Modifier.height(16.dp))
+                BannerAd(AdConfig.bannerDetailInline, AdSize.MEDIUM_RECTANGLE)
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             ReminderSection(dayCal)
+
+            // --- AD SLOT (placeholder): native ad — see AdConfig.nativeDetail ---
+            Spacer(modifier = Modifier.height(16.dp))
+            AdPlaceholder("Native ad slot (test ID: ${AdConfig.nativeDetail})", 120.dp)
+
+            // --- AD SLOT (placeholder): rewarded ad — see AdConfig.rewardedSupport ---
+            Spacer(modifier = Modifier.height(12.dp))
+            AdPlaceholder("Rewarded ad slot: \"Watch a short ad to support us\" (${AdConfig.rewardedSupport})", 72.dp)
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(

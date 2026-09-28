@@ -5,11 +5,13 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.niha.telugucalendar.ads.AdManager
 import com.niha.telugucalendar.reminder.NotificationHelper
 import com.niha.telugucalendar.ui.CalendarScreen
 import com.niha.telugucalendar.ui.DayDetailScreen
@@ -23,8 +25,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         NotificationHelper.createChannel(this)
+        AdManager.initialize(this) // AdMob SDK init + preload interstitial
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
